@@ -1,26 +1,39 @@
-// src/main/java/com/smartclinic/service/AppointmentService.java
-package main.java.com.service;
+package com.smartclinic.service;
 
 import com.smartclinic.model.Appointment;
+import com.smartclinic.repository.AppointmentRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
 public class AppointmentService {
-    private final List<Appointment> appointments = new ArrayList<>();
 
-    public List<Appointment> findByPatientId(Long patientId) {
-        List<Appointment> out = new ArrayList<>();
-        for (Appointment a : appointments) if (a.getPatientId().equals(patientId)) out.add(a);
-        return out;
+    private final AppointmentRepository appointmentRepository;
+
+    public AppointmentService(AppointmentRepository appointmentRepository) {
+        this.appointmentRepository = appointmentRepository;
     }
 
-    // Add helper to add sample data for testing
-    public Appointment add(Appointment a) {
-        if (a.getId() == null) a.setId((long) (appointments.size() + 1));
-        appointments.add(a);
-        return a;
+    /**
+     * Book a new appointment (PERSISTENT STORAGE)
+     */
+    public Appointment bookAppointment(Appointment appointment) {
+        return appointmentRepository.save(appointment);
+    }
+
+    /**
+     * Retrieve appointments for a specific patient
+     */
+    public List<Appointment> findByPatientId(Long patientId) {
+        return appointmentRepository.findByPatientId(patientId);
+    }
+
+    /**
+     * Retrieve appointments by doctor and specific date
+     */
+    public List<Appointment> findByDoctorAndDate(Long doctorId, LocalDate date) {
+        return appointmentRepository.findByDoctorIdAndDate(doctorId, date);
     }
 }
